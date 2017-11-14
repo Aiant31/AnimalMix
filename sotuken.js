@@ -1,13 +1,12 @@
 ﻿var ctx;  
 var canvas;
-var x = 200;
-var y = 70;
-var up    = false;
-var down  = false;
-var vy = 0;
+var yy = 70;
 var color = "#ffa500";
 var colorn = "#1e90ff";
+var up    = false;
+var down  = false;
 var click = false;
+var vy = 0;
 
 window.addEventListener("DOMContentLoaded", function(){
 	canvas = document.getElementById("canvas");
@@ -19,7 +18,9 @@ window.addEventListener("DOMContentLoaded", function(){
 
 	requestAnimationFrame(update);
 
-	window.addEventListener("keydown",function(e){
+	canvas.addEventListener("click", onClick);
+	
+		window.addEventListener("keydown",function(e){
 
 		if (e.key == "ArrowUp") {
 		up = true;
@@ -50,14 +51,14 @@ window.addEventListener("DOMContentLoaded", function(){
 		color = "#ffa500";
 		colorn = "#1e90ff";
 	});
-
-	console.log(canvas);
+	
 }
 );
 
 function update(){
 	requestAnimationFrame(update);
 
+	
 	if (up){
 		vy = vy - 0.9;
 		if (vy < -10){
@@ -70,8 +71,9 @@ function update(){
 			vy = 10;
 		}
 	}
-	y = y + vy;
+	yy = yy + vy;
 	vy = vy * 0.9;
+
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawGraphics2();
@@ -103,7 +105,7 @@ function drawGraphics(){
 }
 
 function drawBottun(){
-
+	ctx.beginPath()
 	ctx.fillStyle = color;
 	ctx.moveTo( 100 , 380 );
 	ctx.lineTo( 50 , 410 );
@@ -117,6 +119,7 @@ function drawBottun(){
 	ctx.stroke();
 	ctx.fill();
 
+	ctx.beginPath()
 	ctx.fillStyle = color;
 	ctx.moveTo( 330 , 400 );
 	ctx.lineTo( 280 , 430 );
@@ -130,6 +133,7 @@ function drawBottun(){
 	ctx.stroke();
 	ctx.fill();
 
+	ctx.beginPath()
 	ctx.fillStyle = color;
 	ctx.moveTo( 100 , 530 );
 	ctx.lineTo( 60 , 560 );
@@ -139,16 +143,16 @@ function drawBottun(){
 	ctx.lineTo( 200 , 530 );
 	ctx.lineTo( 100 , 530 );
 	ctx.stroke();
+	ctx.fill();
 }
-
 
 function drawGraphics2(){
 
 	ctx.fillStyle = colorn;
-	ctx.fillRect(530, y, 200, 60);
-	ctx.fillRect(530, y + 70, 200, 60);
-	ctx.fillRect(530, y + 140, 200, 60);
-	ctx.fillRect(530, y + 210, 200, 60);
+	ctx.fillRect(530, yy, 200, 60);
+	ctx.fillRect(530, yy + 70, 200, 60);
+	ctx.fillRect(530, yy + 140, 200, 60);
+	ctx.fillRect(530, yy + 210, 200, 60);
 }
 
 function drawText(){
@@ -206,23 +210,39 @@ function drawText2(){
 
 	ctx.font = "25px serif";
 	ctx.fillStyle = "#c0c0c0";
-	ctx.strokeText("動物（1）Lv○", 540, y + 10);
-	ctx.fillText("動物（1）Lv○", 540, y + 10);
-	ctx.strokeText("動物（2）Lv○", 540, y + 80);
-	ctx.fillText("動物（2）Lv○", 540, y + 80);
-	ctx.strokeText("動物（3）Lv○", 540, y + 150);
-	ctx.fillText("動物（3）Lv○", 540, y + 150);
-	ctx.strokeText("動物（4）Lv○", 540, y + 220);
-	ctx.fillText("動物（4）Lv○", 540, y + 220);
+	ctx.strokeText("動物（1）Lv○", 540, yy + 10);
+	ctx.fillText("動物（1）Lv○", 540, yy + 10);
+	ctx.strokeText("動物（2）Lv○", 540, yy + 80);
+	ctx.fillText("動物（2）Lv○", 540, yy + 80);
+	ctx.strokeText("動物（3）Lv○", 540, yy + 150);
+	ctx.fillText("動物（3）Lv○", 540, yy + 150);
+	ctx.strokeText("動物（4）Lv○", 540, yy + 220);
+	ctx.fillText("動物（4）Lv○", 540, yy + 220);
 
 }
 
-function drawImage(){
-	var image = new Image();
-	image.src = "snake.png";
-	image.addEventListener("load", function(){
-		//読み込み完了
-		ctx.drawImage(image, 450, y, 172, 172);
-		});
+function onClick(event) {
+	var x;
+	var y;
+	if (event.changedTouches) {
+		var touch = event.changedTouches[0];
+		x = touch.clientX - canvas.offsetLeft;
+		y = touch.clientY - canvas.offsetTop;
+	} else {
+		x = event.offsetX == undefined
+		? event.layerX
+		: event.offsetX;
+		y = event.offsetY == undefined
+		? event.layerY
+		: event.offsetY;
 	}
-
+	if (75 < x && x < 225 && 380 < y && y < 510) {
+		console.log("合成！");
+	}
+	if (305 < x && x < 455 && 400 < y && y < 530) {
+		console.log("狩り！");
+	}
+	if (80 < x && x < 225 && 530 < y && y < 590) {
+		console.log("もどる");
+	}
+}
