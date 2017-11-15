@@ -1,13 +1,18 @@
 ﻿var ctx;  
 var canvas;
 var yy = 70;
-var color = "#ffa500";
+var color1 = "#ffa500";
+var color2 = "#ffa500";
+var color3 = "#ffa500";
 var colorn = "#1e90ff";
+var colors1 = "#000000";
+var colors2 = "#000000";
 var up    = false;
 var down  = false;
 var click = false;
 var vy = 0;
-
+var x;
+var y;
 window.addEventListener("DOMContentLoaded", function(){
 	canvas = document.getElementById("canvas");
 
@@ -19,8 +24,12 @@ window.addEventListener("DOMContentLoaded", function(){
 	requestAnimationFrame(update);
 
 	canvas.addEventListener("click", onClick);
+
+	canvas.addEventListener("mousedown", mousedown);
+
+	canvas.addEventListener("mouseup", mouseup);
 	
-		window.addEventListener("keydown",function(e){
+	/*	window.addEventListener("keydown",function(e){
 
 		if (e.key == "ArrowUp") {
 		up = true;
@@ -50,15 +59,14 @@ window.addEventListener("DOMContentLoaded", function(){
 
 		color = "#ffa500";
 		colorn = "#1e90ff";
-	});
+	});*/
 	
-}
-);
+});
 
 function update(){
 	requestAnimationFrame(update);
 
-	
+	/*
 	if (up){
 		vy = vy - 0.9;
 		if (vy < -10){
@@ -73,7 +81,7 @@ function update(){
 	}
 	yy = yy + vy;
 	vy = vy * 0.9;
-
+*/
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawGraphics2();
@@ -106,7 +114,7 @@ function drawGraphics(){
 
 function drawBottun(){
 	ctx.beginPath()
-	ctx.fillStyle = color;
+	ctx.fillStyle = color1;
 	ctx.moveTo( 100 , 380 );
 	ctx.lineTo( 50 , 410 );
 	ctx.lineTo( 50 , 480 );
@@ -120,7 +128,7 @@ function drawBottun(){
 	ctx.fill();
 
 	ctx.beginPath()
-	ctx.fillStyle = color;
+	ctx.fillStyle = color2;
 	ctx.moveTo( 330 , 400 );
 	ctx.lineTo( 280 , 430 );
 	ctx.lineTo( 280 , 500 );
@@ -134,7 +142,7 @@ function drawBottun(){
 	ctx.fill();
 
 	ctx.beginPath()
-	ctx.fillStyle = color;
+	ctx.fillStyle = color3;
 	ctx.moveTo( 100 , 530 );
 	ctx.lineTo( 60 , 560 );
 	ctx.lineTo( 100 , 590 );
@@ -169,9 +177,11 @@ function drawText(){
 	ctx.fillText("マイパラメータ", 520, 360);
 
 	ctx.font = "70px serif";
+	ctx.fillStyle = colors1;
+	ctx.fillText("↑", 730, 60);
+	ctx.fillStyle = colors2;
+	ctx.fillText("↓", 730, 270);
 	ctx.fillStyle = "#000000";
-	ctx.fillText("↑", 720, 60);
-	ctx.fillText("↓", 720, 270);
 	ctx.fillText("+", 235, 50);
 	ctx.fillText("↓", 225, 120);
 	ctx.fillText("？", 225, 220)
@@ -220,10 +230,7 @@ function drawText2(){
 	ctx.fillText("動物（4）Lv○", 540, yy + 220);
 
 }
-
-function onClick(event) {
-	var x;
-	var y;
+function mousedown(event) {
 	if (event.changedTouches) {
 		var touch = event.changedTouches[0];
 		x = touch.clientX - canvas.offsetLeft;
@@ -237,12 +244,58 @@ function onClick(event) {
 		: event.offsetY;
 	}
 	if (75 < x && x < 225 && 380 < y && y < 510) {
+		color1 = "#ff0000";
+	}
+	if (305 < x && x < 455 && 400 < y && y < 530) {
+		color2 = "#ff0000";
+	}
+	if (80 < x && x < 225 && 530 < y && y < 590) {
+		color3 = "#ff0000";
+	}
+	if (755 < x && x < 775 && 73 < y && y < 133) {
+		colors1 = "#ff0000";
+	}
+	if (755 < x && x < 775 && 285 < y && y < 345) {
+		colors2 = "#ff0000";
+	}
+}
+
+function mouseup(event) {
+
+	if (75 < x && x < 225 && 380 < y && y < 510) {
+		color1 = "#ffa500";
+	}
+	if (305 < x && x < 455 && 400 < y && y < 530) {
+		color2 = "#ffa500";
+	}
+	if (80 < x && x < 225 && 530 < y && y < 590) {
+		color3 = "#ffa500";
+	}
+	if (755 < x && x < 775 && 73 < y && y < 133) {
+		colors1 = "#000000";
+	}
+	if (755 < x && x < 775 && 285 < y && y < 345) {
+		colors2 = "#000000";
+	}
+}
+
+function onClick(event) {
+	
+	if (75 < x && x < 225 && 380 < y && y < 510) {
 		console.log("合成！");
 	}
 	if (305 < x && x < 455 && 400 < y && y < 530) {
 		console.log("狩り！");
 	}
 	if (80 < x && x < 225 && 530 < y && y < 590) {
-		console.log("もどる");
+		console.log("もどす");
+		ctx.clearRect(40, 60, 480, 360);
+	}
+	if (755 < x && x < 775 && 73 < y && y < 133) {
+		yy = yy - 70;
+	}
+	if (755 < x && x < 775 && 285 < y && y < 345) {
+		yy = yy + 70;
 	}
 }
+
