@@ -4,6 +4,9 @@ var yy = 70;
 var n = 0;
 var m = 0;
 var c = 4;
+var lv = 1;
+var nextlv = lv * lv;
+var lvCount = 0;
 var color1 = "#ffa500";
 var color2 = "#ffa500";
 var color3 = "#ffa500";
@@ -260,12 +263,12 @@ function drawText(){
 	ctx.fillText("狩り", 310, 420);
 
 	ctx.font = "25px serif";
-	ctx.strokeText("合成Lv○", 530, 410);
-	ctx.fillText("合成Lv○", 530, 410);
+	ctx.strokeText("合成Lv" + lv, 530, 410);
+	ctx.fillText("合成Lv" + lv, 530, 410);
 	ctx.strokeText("次のレベルまで", 530, 450);
 	ctx.fillText("次のレベルまで", 530, 450);
-	ctx.strokeText("あと○回", 530, 470);
-	ctx.fillText("あと○回", 530, 470);
+	ctx.strokeText("あと" + nextlv + "回", 530, 470);
+	ctx.fillText("あと" + nextlv + "回", 530, 470);
 	ctx.strokeText("動物図鑑", 530, 510);
 	ctx.fillText("動物図鑑", 530, 510);
 	ctx.strokeText("△種類", 530, 530);
@@ -357,19 +360,28 @@ function onClick(event) {
 			click1 = false;
 			click2 = false;
 			mix = true;
-//			if(n = 1 || m = 1){
+			if(n == 1 || m == 1){
 				clear1 = true;
-//			}
-//			else if(n = 2 || m = 2){
-				clear2 = true;
-//			}
-/*			else if(n = 3 || m = 3){
+				if(n == 2 || m == 2){
+					clear2 = true;
+				}
+			}
+			if(n == 3 || m == 3){
 				clear3 = true;
+				if(n == 4 || m == 4){
+					clear4 = true;
+				}
 			}
-			else if(n = 4 || m = 4){
-				clear4 = true;
+			lvCount++;
+			if(lvCount == lv * lv){
+				lv++;
+				nextlv = lv * lv;
+				lvCount = 0;
 			}
-*/		}
+			else{
+				nextlv--;
+		}
+		}
 	}
 	if (305 < x && x < 455 && 400 < y && y < 530) {
 		console.log("狩り！");
@@ -402,7 +414,7 @@ function onClick(event) {
 		if(click2 == false && mix == false){
 			colorn2 = "#ff0000";
 			click2 = true;
-			n = 2;
+			m = 2;
 		}
 		else{
 			colorn2 = "#1e90ff";
@@ -414,7 +426,7 @@ function onClick(event) {
 		if(click1 == false && mix == false){
 			colorn3 = "#ff0000";
 			click1 = true;
-			n = 1;
+			n = 3;
 		}
 		else{
 			colorn3 = "#1e90ff";
@@ -426,12 +438,12 @@ function onClick(event) {
 		if(click2 == false && mix == false){
 			colorn4 = "#ff0000";
 			click2 = true;
-			n = 1;
+			m = 4;
 		}
 		else{
 			colorn4 = "#1e90ff";
 			click2 = false;
-			n = 0;
+			m = 0;
 		}
 	}
 	if (755 < x && x < 775 && 73 < y && y < 133) {
