@@ -1,16 +1,29 @@
 ﻿var ctx;  
 var canvas;
 var yy = 70;
+var n = 0;
+var m = 0;
+var c = 4;
 var color1 = "#ffa500";
 var color2 = "#ffa500";
 var color3 = "#ffa500";
-var colorn = "#1e90ff";
+var colorn1 = "#1e90ff";
+var colorn2 = "#1e90ff";
+var colorn3 = "#1e90ff";
+var colorn4 = "#1e90ff";
 var colors1 = "#000000";
 var colors2 = "#000000";
+var mix = false;
+var clear1 = false;
+var clear2 = false;
+var clear3 = false;
+var clear4 = false;
 var up    = false;
 var down  = false;
-var click = false;
-var vy = 0;
+var click1 = false;
+var click2 = false;
+var gosei = false;
+var hant = false;
 var x;
 var y;
 window.addEventListener("DOMContentLoaded", function(){
@@ -85,23 +98,47 @@ function update(){
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawGraphics2();
+	newGraphics();
 	drawText2();
 	drawGraphics();
 	drawBottun();
+	//if(clear == true){
+	//	ctx.clearRect(45, 70, 425, 285);
+//	}
 	drawText();
+	drawStrokes()
 }
 
 function drawGraphics(){
 
 	ctx.fillStyle = "#1e90ff";
-	ctx.fillRect(45, 75, 180, 45);
-	ctx.fillRect(290, 75, 180, 45);
+	ctx.font = "25px serif";
+	if(click1 == true){
+		ctx.fillRect(50, 75, 180, 45);
+		ctx.fillStyle = "#c0c0c0";
+		ctx.strokeText("動物（1）Lv○", 55, 80);
+		ctx.fillText("動物（1）Lv○", 55, 80);
+	}
+	if(click2 == true){
+		ctx.fillStyle = "#1e90ff";
+		ctx.fillRect(290, 75, 180, 45);
+		ctx.fillStyle = "#c0c0c0";
+		ctx.strokeText("動物（2）Lv○", 300, 80);
+		ctx.fillText("動物（2）Lv○", 300, 80);
+	}
+	if(mix == true){
+		ctx.fillStyle = "#1e90ff";
+		ctx.fillRect(120, 200, 280, 120);
+	}
 
 	ctx.fillStyle = "#ffffff";
 	ctx.fillRect(520, 0, 220, 60);
 	ctx.fillRect(520, 350, 220, 50);
-	ctx.fillStyle = "#ffffff";
 	ctx.fillRect(520, 400, 220, 200);
+
+}
+
+function drawStrokes(){
 
 	ctx.lineWidth = 5;
 	ctx.strokeStyle = "#000000";
@@ -109,10 +146,14 @@ function drawGraphics(){
 	ctx.strokeRect(520, 60, 220, 290);
 	ctx.strokeRect(520, 400, 220, 200);
 	ctx.strokeRect(120, 200, 280, 120);
+	ctx.lineWidth = 2;
+	ctx.strokeRect(50, 75, 180, 45);
+	ctx.strokeRect(290, 75, 180, 45);
 
 }
 
 function drawBottun(){
+	ctx.lineWidth = 5;
 	ctx.beginPath()
 	ctx.fillStyle = color1;
 	ctx.moveTo( 100 , 380 );
@@ -156,11 +197,36 @@ function drawBottun(){
 
 function drawGraphics2(){
 
-	ctx.fillStyle = colorn;
+	ctx.font = "25px serif";
+	ctx.fillStyle = colorn1;
 	ctx.fillRect(530, yy, 200, 60);
+	ctx.fillStyle = colorn2;
 	ctx.fillRect(530, yy + 70, 200, 60);
+	ctx.fillStyle = colorn3;
 	ctx.fillRect(530, yy + 140, 200, 60);
+	ctx.fillStyle = colorn4;
 	ctx.fillRect(530, yy + 210, 200, 60);
+	ctx.fillStyle = "#c0c0c0";
+	ctx.strokeText("動物（1）Lv○", 540, yy + 10);
+	ctx.fillText("動物（1）Lv○", 540, yy + 10);
+	ctx.strokeText("動物（2）Lv○", 540, yy + 80);
+	ctx.fillText("動物（2）Lv○", 540, yy + 80);
+	ctx.strokeText("動物（3）Lv○", 540, yy + 150);
+	ctx.fillText("動物（3）Lv○", 540, yy + 150);
+	ctx.strokeText("動物（4）Lv○", 540, yy + 220);
+	ctx.fillText("動物（4）Lv○", 540, yy + 220);
+	if(clear1 == true){
+		ctx.clearRect(530, yy, 200, 60);
+	}
+	if(clear2 == true){
+		ctx.clearRect(530, yy + 70, 200, 60);
+	}
+	if(clear3 == true){
+		ctx.clearRect(530, yy + 140, 200, 60);
+	}
+	if(clear4 == true){
+		ctx.clearRect(530, yy + 210, 200, 60);
+	}
 }
 
 function drawText(){
@@ -184,7 +250,6 @@ function drawText(){
 	ctx.fillStyle = "#000000";
 	ctx.fillText("+", 235, 50);
 	ctx.fillText("↓", 225, 120);
-	ctx.fillText("？", 225, 220)
 	
 	ctx.strokeStyle = "#000000";
 	ctx.strokeText("合成！", 50, 400);
@@ -195,11 +260,6 @@ function drawText(){
 	ctx.fillText("狩り", 310, 420);
 
 	ctx.font = "25px serif";
-	ctx.strokeText("動物（1）Lv○", 50, 80);
-	ctx.fillText("動物（1）Lv○", 50, 80);
-	ctx.strokeText("動物（4）Lv○", 300, 80);
-	ctx.fillText("動物（4）Lv○", 300, 80);
-
 	ctx.strokeText("合成Lv○", 530, 410);
 	ctx.fillText("合成Lv○", 530, 410);
 	ctx.strokeText("次のレベルまで", 530, 450);
@@ -220,15 +280,24 @@ function drawText2(){
 
 	ctx.font = "25px serif";
 	ctx.fillStyle = "#c0c0c0";
-	ctx.strokeText("動物（1）Lv○", 540, yy + 10);
-	ctx.fillText("動物（1）Lv○", 540, yy + 10);
-	ctx.strokeText("動物（2）Lv○", 540, yy + 80);
-	ctx.fillText("動物（2）Lv○", 540, yy + 80);
-	ctx.strokeText("動物（3）Lv○", 540, yy + 150);
-	ctx.fillText("動物（3）Lv○", 540, yy + 150);
-	ctx.strokeText("動物（4）Lv○", 540, yy + 220);
-	ctx.fillText("動物（4）Lv○", 540, yy + 220);
+	ctx.strokeText("1体目", 110, 80);
+	ctx.fillText("1体目", 110, 80);
+	ctx.strokeText("2体目", 350, 80);
+	ctx.fillText("2体目", 350, 80);
+	ctx.font = "70px serif";
+	ctx.fillStyle = "#000000";
+	ctx.fillText("？", 225, 220)
 
+}
+
+function newGraphics(){
+
+	if(gosei == true){
+		ctx.fillRect(530, yy + yy * c, 200, 60);
+	}
+	if(hant == true){
+		ctx.fillRect(530, yy + yy * c, 200, 60);
+	}
 }
 function mousedown(event) {
 	if (event.changedTouches) {
@@ -283,19 +352,99 @@ function onClick(event) {
 	
 	if (75 < x && x < 225 && 380 < y && y < 510) {
 		console.log("合成！");
+		if(click1 == true && click2 == true){
+			console.log("成功！");
+			click1 = false;
+			click2 = false;
+			mix = true;
+//			if(n = 1 || m = 1){
+				clear1 = true;
+//			}
+//			else if(n = 2 || m = 2){
+				clear2 = true;
+//			}
+/*			else if(n = 3 || m = 3){
+				clear3 = true;
+			}
+			else if(n = 4 || m = 4){
+				clear4 = true;
+			}
+*/		}
 	}
 	if (305 < x && x < 455 && 400 < y && y < 530) {
 		console.log("狩り！");
+		hant = true;
+		newGraphics();
+		c++;
 	}
 	if (80 < x && x < 225 && 530 < y && y < 590) {
 		console.log("もどす");
-		ctx.clearRect(40, 60, 480, 360);
+		click1 = false;
+		click2 = false;
+		colorn1 = "#1e90ff";
+		colorn2 = "#1e90ff";
+		colorn3 = "#1e90ff";
+		colorn4 = "#1e90ff";
+	}
+	if (530 < x && x < 730 && yy < y && y < yy + 60) {
+		if(click1 == false && mix == false){
+			colorn1 = "#ff0000";
+			click1 = true;
+			n = 1;
+		}
+		else{
+			colorn1 = "#1e90ff";
+			click1 = false;
+			n = 0;
+		}
+	}
+	if (530 < x && x < 730 && yy + 70 < y && y < yy + 130) {
+		if(click2 == false && mix == false){
+			colorn2 = "#ff0000";
+			click2 = true;
+			n = 2;
+		}
+		else{
+			colorn2 = "#1e90ff";
+			click2 = false;
+			m = 0;
+		}
+	}
+	if (530 < x && x < 730 && yy + 140 < y && y < yy + 200) {
+		if(click1 == false && mix == false){
+			colorn3 = "#ff0000";
+			click1 = true;
+			n = 1;
+		}
+		else{
+			colorn3 = "#1e90ff";
+			click1 = false;
+			n = 0;
+		}
+	}
+	if (530 < x && x < 730 && yy + 210 < y && y < yy + 270) {
+		if(click2 == false && mix == false){
+			colorn4 = "#ff0000";
+			click2 = true;
+			n = 1;
+		}
+		else{
+			colorn4 = "#1e90ff";
+			click2 = false;
+			n = 0;
+		}
 	}
 	if (755 < x && x < 775 && 73 < y && y < 133) {
 		yy = yy - 70;
 	}
 	if (755 < x && x < 775 && 285 < y && y < 345) {
 		yy = yy + 70;
+	}
+	if(120 < x && x < 400 && 200 < y && y < 320){
+		mix = false;
+		gosei = true;
+		newGraphics();
+		c++;
 	}
 }
 
