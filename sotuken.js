@@ -1,115 +1,160 @@
-﻿var ctx;  
-var canvas;
-var yy = 70;
-var n = 0;
-var m = 0;
-var c = 4;
-var lv = 1;
-var nextlv = lv * lv;
-var lvCount = 0;
-var color1 = "#ffa500";
-var color2 = "#ffa500";
-var color3 = "#ffa500";
-var colorn1 = "#1e90ff";
-var colorn2 = "#1e90ff";
-var colorn3 = "#1e90ff";
-var colorn4 = "#1e90ff";
-var colors1 = "#000000";
-var colors2 = "#000000";
-var mix = false;
-var clear1 = false;
-var clear2 = false;
-var clear3 = false;
-var clear4 = false;
-var up    = false;
-var down  = false;
-var click1 = false;
-var click2 = false;
-var gosei = false;
-var hant = false;
-var x;
-var y;
-window.addEventListener("DOMContentLoaded", function(){
-	canvas = document.getElementById("canvas");
+﻿var ctx
+var canvas
 
-	canvas.width = 800;
-	canvas.height = 600;
+var yy = 70
+var n = 0
+var m = 0
+var c = 4
+var lv = 1
 
-	ctx = canvas.getContext("2d");
+var nextlv = lv * lv
+var lvCount = 0
 
-	requestAnimationFrame(update);
+var color1 = "#ffa500"
+var color2 = "#ffa500"
+var color3 = "#ffa500"
+var colorn1 = "#1e90ff"
+var colorn2 = "#1e90ff"
+var colorn3 = "#1e90ff"
+var colorn4 = "#1e90ff"
+var colors1 = "#000000"
+var colors2 = "#000000"
 
-	canvas.addEventListener("click", onClick);
+var mix = false
+var clear1 = false
+var clear2 = false
+var clear3 = false
+var clear4 = false
+var up    = false
+var down  = false
+var click1 = false
+var click2 = false
+var gosei = false
+var hant = false
+var x
+var y
 
-	canvas.addEventListener("mousedown", mousedown);
+const buttons = [
+	{
+		shape: "octagon",
+		text: "合成！",
+		position: [50, 380]
+	},
+	{
+		shape: "octagon",
+		text: "狩り",
+		position: [280, 400]
+	},
+	{
+		shape: "hexagon",
+		text: "もどす",
+		position: [60, 530]
+	}
+]
 
-	canvas.addEventListener("mouseup", mouseup);
-	
-	/*	window.addEventListener("keydown",function(e){
+window.addEventListener("DOMContentLoaded", init)
 
-		if (e.key == "ArrowUp") {
-		up = true;
-		}
-		if (e.key == "ArrowDown") {
-		down = true;
-		}
-	});
+function init() {
+	canvas = document.getElementById("canvas")
+	canvas.width = 800
+	canvas.height = 600
 
-	window.addEventListener("keyup",function(e){
+	ctx = canvas.getContext("2d")
 
-		if (e.key == "ArrowUp") {
-		up = false;
-		}
-		if (e.key == "ArrowDown") {
-		down = false;
-		}
-	});
+	canvas.addEventListener("click", onClick)
+	canvas.addEventListener("mousedown", mousedown)
+	canvas.addEventListener("mouseup", mouseup)
 
-	window.addEventListener("mousedown",function(f){
-
-		color = "#ff0000";
-		colorn = "#ff0000";
-	});
-
-	window.addEventListener("mouseup",function(f){
-
-		color = "#ffa500";
-		colorn = "#1e90ff";
-	});*/
-	
-});
+	requestAnimationFrame(update)
+}
 
 function update(){
-	requestAnimationFrame(update);
+	requestAnimationFrame(update)
+	render()
+}
 
-	/*
-	if (up){
-		vy = vy - 0.9;
-		if (vy < -10){
-			vy = -10;
-		}
-	}
-	if (down){
-		vy = vy + 0.9;
-		if (vy > 10){
-			vy = 10;
-		}
-	}
-	yy = yy + vy;
-	vy = vy * 0.9;
-*/
-
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawGraphics2();
-	newGraphics();
-	drawText2();
-	drawGraphics();
-	drawBottun();
-	//if(clear == true){
-	//	ctx.clearRect(45, 70, 425, 285);
-//	}
-	drawText();
+function render() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height)
+	drawGraphics2()
+	newGraphics()
+	drawText2()
+	drawGraphics()
+	renderButtons()
+	drawText()
 	drawStrokes()
+}
+
+function renderButtons() {
+	let textX
+	let textY
+	buttons.forEach((button) => {
+		const position = button.position
+		switch (button.shape) {
+			case "octagon":
+				drawOctagonButtonFrame(position[0], position[1])
+				ctx.font = "70px serif"
+				ctx.lineWidth = 2
+				ctx.textBaseline = "top"
+				{
+					const metrics = ctx.measureText(button.text)
+					textX = position[0] - metrics.width / 2 + 100
+					textY = position[1] + 20
+				}
+				break;
+			case "hexagon":
+				drawHexagonButtonFrame(position[0], position[1])
+				ctx.font = "45px serif"
+				ctx.lineWidth = 2
+				ctx.textBaseline = "top"
+				{
+					const metrics = ctx.measureText(button.text)
+					textX = position[0] - metrics.width / 2 + 95
+					textY = position[1]
+				}
+				break;
+		}
+		
+		ctx.strokeStyle = "black"
+		ctx.fillStyle = "#c0c0c0"
+
+		
+		ctx.fillText(button.text, textX, textY)
+		ctx.strokeText(button.text, textX, textY)
+	})
+}
+
+function drawOctagonButtonFrame(x, y) {
+	ctx.lineWidth = 5
+	ctx.strokeStyle = "black"
+	ctx.fillStyle = "#ffa500"
+	ctx.beginPath()
+	ctx.moveTo(x + 50, y)
+	ctx.lineTo(x, y + 30)
+	ctx.lineTo(x, y + 100)
+	ctx.lineTo(x + 50, y + 130)
+	ctx.lineTo(x + 150, y + 130)
+	ctx.lineTo(x + 200, y + 100)
+	ctx.lineTo(x + 200, y + 30)
+	ctx.lineTo(x + 150, y)
+	ctx.lineTo(x + 50, y)
+	ctx.stroke()
+	ctx.fill()
+}
+
+function drawHexagonButtonFrame(x, y) {
+	ctx.lineWidth = 5
+	ctx.strokeStyle = "black"
+	ctx.fillStyle = "#ffa500"
+	ctx.beginPath()
+	ctx.moveTo(x + 40, y)
+	ctx.lineTo(x, y + 30)
+	ctx.lineTo(x + 40, y + 60)
+	ctx.lineTo(x + 140, y + 60)
+	ctx.lineTo(x + 190, y + 30)
+	ctx.lineTo(x + 140, y)
+	ctx.lineTo(x + 40, y)
+	ctx.stroke()
+	ctx.fill()
 }
 
 function drawGraphics(){
@@ -153,49 +198,6 @@ function drawStrokes(){
 	ctx.strokeRect(50, 75, 180, 45);
 	ctx.strokeRect(290, 75, 180, 45);
 
-}
-
-function drawBottun(){
-	ctx.lineWidth = 5;
-	ctx.beginPath()
-	ctx.fillStyle = color1;
-	ctx.moveTo( 100 , 380 );
-	ctx.lineTo( 50 , 410 );
-	ctx.lineTo( 50 , 480 );
-	ctx.lineTo( 100 , 510 );
-	ctx.lineTo( 200 , 510 );
-	ctx.lineTo( 250 , 480 );
-	ctx.lineTo( 250 , 410 );
-	ctx.lineTo( 200 , 380 );
-	ctx.lineTo( 100 , 380 );
-	ctx.stroke();
-	ctx.fill();
-
-	ctx.beginPath()
-	ctx.fillStyle = color2;
-	ctx.moveTo( 330 , 400 );
-	ctx.lineTo( 280 , 430 );
-	ctx.lineTo( 280 , 500 );
-	ctx.lineTo( 330 , 530 );
-	ctx.lineTo( 430 , 530 );
-	ctx.lineTo( 480 , 500 );
-	ctx.lineTo( 480 , 430 );
-	ctx.lineTo( 430 , 400 );
-	ctx.lineTo( 330 , 400 );
-	ctx.stroke();
-	ctx.fill();
-
-	ctx.beginPath()
-	ctx.fillStyle = color3;
-	ctx.moveTo( 100 , 530 );
-	ctx.lineTo( 60 , 560 );
-	ctx.lineTo( 100 , 590 );
-	ctx.lineTo( 200 , 590 );
-	ctx.lineTo( 250 , 560 );
-	ctx.lineTo( 200 , 530 );
-	ctx.lineTo( 100 , 530 );
-	ctx.stroke();
-	ctx.fill();
 }
 
 function drawGraphics2(){
@@ -254,14 +256,6 @@ function drawText(){
 	ctx.fillText("+", 235, 50);
 	ctx.fillText("↓", 225, 120);
 	
-	ctx.strokeStyle = "#000000";
-	ctx.strokeText("合成！", 50, 400);
-	ctx.fillStyle = "#c0c0c0";
-	ctx.fillText("合成！", 50, 400);
-	ctx.strokeText("狩り", 310, 420);
-	ctx.fillStyle = "#c0c0c0";
-	ctx.fillText("狩り", 310, 420);
-
 	ctx.font = "25px serif";
 	ctx.strokeText("合成Lv" + lv, 530, 410);
 	ctx.fillText("合成Lv" + lv, 530, 410);
@@ -273,11 +267,7 @@ function drawText(){
 	ctx.fillText("動物図鑑", 530, 510);
 	ctx.strokeText("△種類", 530, 530);
 	ctx.fillText("△種類", 530, 530);
-
-	ctx.font = "45px serif";
-	ctx.strokeText("もどす", 80, 530);
-	ctx.fillText("もどす", 80, 530);
-	}
+}
 
 function drawText2(){
 
