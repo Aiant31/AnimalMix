@@ -34,6 +34,10 @@ var hant = false
 var x
 var y
 
+
+/**
+ * ボタンデータ
+ */
 const buttons = [
 	{
 		shape: "octagon",
@@ -52,8 +56,51 @@ const buttons = [
 	}
 ]
 
+
+/**
+ * キャラクターのマスターデータ
+ */
+const characterMaster = [
+	{
+		name: "動物１",
+		level: 1
+	},
+	{
+		name: "動物２",
+		level: 2
+	},
+	{
+		name: "動物３",
+		level: 3
+	},
+	{
+		name: "動物４",
+		level: 4
+	}
+]
+
+
+/**
+ * 所有しているキャラクター
+ */
+const propertyCharacter = [0, 1, 2, 3]
+
+/**
+ * 所有キャラクターリストのスクロール位置
+ */
+var propertyListScroll = 0
+
+/**
+ * 選択中の所有キャラクター項番（２つ）
+ */
+var selectedPropertyCharacter = []
+
+
 window.addEventListener("DOMContentLoaded", init)
 
+/**
+ * 初期化
+ */
 function init() {
 	canvas = document.getElementById("canvas")
 	canvas.width = 800
@@ -68,22 +115,35 @@ function init() {
 	requestAnimationFrame(update)
 }
 
-function update(){
+
+/**
+ * 更新
+ */
+function update() {
 	requestAnimationFrame(update)
 	render()
 }
 
+
+/**
+ * 描画
+ */
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
-	drawGraphics2()
+	//drawGraphics2()
 	newGraphics()
 	drawText2()
-	drawGraphics()
+	//drawGraphics()
 	renderButtons()
+	renderProperties()
 	drawText()
 	drawStrokes()
 }
 
+
+/**
+ * ボタンの描画
+ */
 function renderButtons() {
 	let textX
 	let textY
@@ -117,12 +177,17 @@ function renderButtons() {
 		ctx.strokeStyle = "black"
 		ctx.fillStyle = "#c0c0c0"
 
-		
 		ctx.fillText(button.text, textX, textY)
 		ctx.strokeText(button.text, textX, textY)
 	})
 }
 
+
+/**
+ * 八角形タイプのボタン枠の描画
+ * @param {Number} x 
+ * @param {Number} y 
+ */
 function drawOctagonButtonFrame(x, y) {
 	ctx.lineWidth = 5
 	ctx.strokeStyle = "black"
@@ -141,6 +206,12 @@ function drawOctagonButtonFrame(x, y) {
 	ctx.fill()
 }
 
+
+/**
+ * 六角形タイプのボタン枠の描画
+ * @param {Number} x 
+ * @param {Number} y 
+ */
 function drawHexagonButtonFrame(x, y) {
 	ctx.lineWidth = 5
 	ctx.strokeStyle = "black"
@@ -157,33 +228,39 @@ function drawHexagonButtonFrame(x, y) {
 	ctx.fill()
 }
 
-function drawGraphics(){
 
-	ctx.fillStyle = "#1e90ff";
+/**
+ * 所有キャラクターリストの描画
+ */
+function renderProperties() {
+	// 枠
+	ctx.lineWidth = 5
+	ctx.strokeStyle = "black"
+	ctx.strokeRect(520, 60, 220, 290)
+
+	// 所有キャラクター
 	ctx.font = "25px serif";
-	if(click1 == true){
-		ctx.fillRect(50, 75, 180, 45);
-		ctx.fillStyle = "#c0c0c0";
-		ctx.strokeText("動物（1）Lv○", 55, 80);
-		ctx.fillText("動物（1）Lv○", 55, 80);
-	}
-	if(click2 == true){
-		ctx.fillStyle = "#1e90ff";
-		ctx.fillRect(290, 75, 180, 45);
-		ctx.fillStyle = "#c0c0c0";
-		ctx.strokeText("動物（2）Lv○", 300, 80);
-		ctx.fillText("動物（2）Lv○", 300, 80);
-	}
-	if(mix == true){
-		ctx.fillStyle = "#1e90ff";
-		ctx.fillRect(120, 200, 280, 120);
-	}
+	[0, 1, 2, 3].forEach((index) => {
+		const propertyCharacterIndex = propertyListScroll + index
+		const charaId = propertyCharacter[propertyCharacterIndex]
+		const chara = characterMaster[charaId]
 
-	ctx.fillStyle = "#ffffff";
-	ctx.fillRect(520, 0, 220, 60);
-	ctx.fillRect(520, 350, 220, 50);
-	ctx.fillRect(520, 400, 220, 200);
+		// 項目の枠
+		if (selectedPropertyCharacter.includes(propertyCharacterIndex)) {
+			// 選択中のキャラクター
+			ctx.fillStyle = "#1e90ff"
+		} else {
+			ctx.fillStyle = "#1e90ff"
+		}
+		ctx.fillRect(530, 70 + 70 * index, 200, 60)
 
+		// キャラクター名
+		ctx.fillStyle = "#c0c0c0"
+		ctx.strokeStyle = "black"
+		const displayName = chara.name + " Lv" + chara.level
+		ctx.strokeText(displayName, 540, 80 + 70 * index)
+		ctx.fillText(displayName, 540, 80 + 70 * index)
+	})
 }
 
 function drawStrokes(){
@@ -191,47 +268,13 @@ function drawStrokes(){
 	ctx.lineWidth = 5;
 	ctx.strokeStyle = "#000000";
 	ctx.strokeRect(40, 60, 440, 300);
-	ctx.strokeRect(520, 60, 220, 290);
+	//ctx.strokeRect(520, 60, 220, 290);
 	ctx.strokeRect(520, 400, 220, 200);
 	ctx.strokeRect(120, 200, 280, 120);
 	ctx.lineWidth = 2;
 	ctx.strokeRect(50, 75, 180, 45);
 	ctx.strokeRect(290, 75, 180, 45);
 
-}
-
-function drawGraphics2(){
-
-	ctx.font = "25px serif";
-	ctx.fillStyle = colorn1;
-	ctx.fillRect(530, yy, 200, 60);
-	ctx.fillStyle = colorn2;
-	ctx.fillRect(530, yy + 70, 200, 60);
-	ctx.fillStyle = colorn3;
-	ctx.fillRect(530, yy + 140, 200, 60);
-	ctx.fillStyle = colorn4;
-	ctx.fillRect(530, yy + 210, 200, 60);
-	ctx.fillStyle = "#c0c0c0";
-	ctx.strokeText("動物（1）Lv○", 540, yy + 10);
-	ctx.fillText("動物（1）Lv○", 540, yy + 10);
-	ctx.strokeText("動物（2）Lv○", 540, yy + 80);
-	ctx.fillText("動物（2）Lv○", 540, yy + 80);
-	ctx.strokeText("動物（3）Lv○", 540, yy + 150);
-	ctx.fillText("動物（3）Lv○", 540, yy + 150);
-	ctx.strokeText("動物（4）Lv○", 540, yy + 220);
-	ctx.fillText("動物（4）Lv○", 540, yy + 220);
-	if(clear1 == true){
-		ctx.clearRect(530, yy, 200, 60);
-	}
-	if(clear2 == true){
-		ctx.clearRect(530, yy + 70, 200, 60);
-	}
-	if(clear3 == true){
-		ctx.clearRect(530, yy + 140, 200, 60);
-	}
-	if(clear4 == true){
-		ctx.clearRect(530, yy + 210, 200, 60);
-	}
 }
 
 function drawText(){
