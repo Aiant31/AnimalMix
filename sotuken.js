@@ -1,27 +1,10 @@
 ﻿var ctx
 var canvas
 
-var yy = 70
-var n = 0
-var m = 0
-var c = 4
-var lv = 1
+var level = 1
+var nextLevelMixCountdown = level * level
 
-var nextlv = lv * lv
-var lvCount = 0
-
-var mix = false
-var clear1 = false
-var clear2 = false
-var clear3 = false
-var clear4 = false
-var up    = false
-var down  = false
-var click1 = false
-var click2 = false
-var gosei = false
-var hant = false
-
+var mixed = false
 
 /**
  * ボタンデータ
@@ -111,7 +94,7 @@ const characterMaster = [
 /**
  * 所有しているキャラクター
  */
-const propertyCharacter = [0, 0, 1, 1, 2, 3]
+let propertyCharacter = [0, 0, 1, 2, 3, 0]
 
 /**
  * 所有キャラクターリストのスクロール位置
@@ -163,7 +146,6 @@ function update() {
  */
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
-	newGraphics()
 
 	// 合成画面の描画
 	renderMixView()
@@ -325,6 +307,9 @@ function renderProperties() {
 	ctx.font = "25px serif";
 	[0, 1, 2, 3].forEach((index) => {
 		const propertyCharacterIndex = propertyListScroll + index
+		if (propertyCharacter.length <= propertyCharacterIndex) {
+			return
+		}
 		const charaId = propertyCharacter[propertyCharacterIndex]
 		const chara = characterMaster[charaId]
 
@@ -381,6 +366,7 @@ function renderMixView() {
 	ctx.fillStyle = "black"
 	ctx.fillText("？", 225, 220)
 
+	// 合成対象のキャラクター
 	selectedPropertyCharacter.forEach((propertyIndex, index) => {
 		const charaId = propertyCharacter[propertyIndex]
 		const chara = characterMaster[charaId]
@@ -392,6 +378,13 @@ function renderMixView() {
 		ctx.fillStyle = "#c0c0c0";
 		ctx.fillText(displayName, 55 + 245 * index, 80);
 	})
+
+	// 合成済みキャラクター
+	if (mixed) {
+		ctx.fillStyle = "#1e90ff"
+		ctx.font = "25px serif"
+		ctx.fillRect(120, 200, 280, 120);
+	}
 }
 
 
@@ -413,26 +406,16 @@ function renderStatusView() {
 
 	ctx.fillStyle = "black"
 	ctx.font = "25px serif"
-	ctx.strokeText("合成Lv" + lv, 530, 410)
-	ctx.fillText("合成Lv" + lv, 530, 410)
+	ctx.strokeText("合成Lv" + level, 530, 410)
+	ctx.fillText("合成Lv" + level, 530, 410)
 	ctx.strokeText("次のレベルまで", 530, 450)
 	ctx.fillText("次のレベルまで", 530, 450)
-	ctx.strokeText("あと" + nextlv + "回", 530, 470)
-	ctx.fillText("あと" + nextlv + "回", 530, 470)
+	ctx.strokeText("あと" + nextLevelMixCountdown + "回", 530, 470)
+	ctx.fillText("あと" + nextLevelMixCountdown + "回", 530, 470)
 	ctx.strokeText("動物図鑑", 530, 510)
 	ctx.fillText("動物図鑑", 530, 510)
 	ctx.strokeText("△種類", 530, 530)
 	ctx.fillText("△種類", 530, 530)
-}
-
-
-function newGraphics(){
-	if(gosei == true){
-		ctx.fillRect(530, yy + yy * c, 200, 60);
-	}
-	if(hant == true){
-		ctx.fillRect(530, yy + yy * c, 200, 60);
-	}
 }
 
 
@@ -491,11 +474,14 @@ function mouseevent(event) {
 	})
 
 	// 合成対象キャラクターの追加
-	if (event.type == "click") {
+	if (mixed == false && event.type == "click") {
 		[0, 1, 2, 3].forEach((index) => {
 			const top = 70 + 70 * index
 			if (530 < x && x < 730 && top < y && y < top + 60) {
 				const propertyCharacterIndex = propertyListScroll + index
+				if (propertyCharacter.length <= propertyCharacterIndex) {
+					return
+				}
 				const existsIndex = selectedPropertyCharacter.indexOf(propertyCharacterIndex)
 				if (existsIndex == -1) {
 					if (selectedPropertyCharacter.length < 2) {
@@ -506,6 +492,11 @@ function mouseevent(event) {
 				}
 			}
 		})
+	}
+
+	// 合成済みキャラクターの獲得
+	if(120 < x && x < 400 && 200 < y && y < 320){
+		mixed = false;
 	}
 }
 
@@ -520,102 +511,30 @@ function mouseup(event) {
 	})
 }
 
-function onClick(event) {
-	let x
-	let y
-	if (event.changedTouches) {
-		var touch = event.changedTouches[0];
-		x = touch.clientX - canvas.offsetLeft;
-		y = touch.clientY - canvas.offsetTop;
-	} else {
-		x = event.offsetX == undefined
-		? event.layerX
-		: event.offsetX;
-		y = event.offsetY == undefined
-		? event.layerY
-		: event.offsetY;
-	}
-
-	if (530 < x && x < 730 && yy < y && y < yy + 60) {
-		if(click1 == false && mix == false){
-			click1 = true;
-			n = 1;
-		}
-		else{
-			click1 = false;
-			n = 0;
-		}
-	}
-	if (530 < x && x < 730 && yy + 70 < y && y < yy + 130) {
-		if(click2 == false && mix == false){
-			click2 = true;
-			m = 2;
-		}
-		else{
-			click2 = false;
-			m = 0;
-		}
-	}
-	if (530 < x && x < 730 && yy + 140 < y && y < yy + 200) {
-		if(click1 == false && mix == false){
-			click1 = true;
-			n = 3;
-		}
-		else{
-			click1 = false;
-			n = 0;
-		}
-	}
-	if (530 < x && x < 730 && yy + 210 < y && y < yy + 270) {
-		if(click2 == false && mix == false){
-			click2 = true;
-			m = 4;
-		}
-		else{
-			click2 = false;
-			m = 0;
-		}
-	}
-	if(120 < x && x < 400 && 200 < y && y < 320){
-		mix = false;
-		gosei = true;
-		newGraphics();
-		c++;
-	}
-}
-
 
 /**
  * 合成実行
  */
 function executeMix() {
-	console.log("合成")
-	if(click1 == true && click2 == true){
-		console.log("成功！");
-		click1 = false;
-		click2 = false;
-		mix = true;
-		if(n == 1 || m == 1){
-			clear1 = true;
-			if(n == 2 || m == 2){
-				clear2 = true;
-			}
-		}
-		if(n == 3 || m == 3){
-			clear3 = true;
-			if(n == 4 || m == 4){
-				clear4 = true;
-			}
-		}
-		lvCount++;
-		if(lvCount == lv * lv){
-			lv++;
-			nextlv = lv * lv;
-			lvCount = 0;
-		}
-		else{
-			nextlv--;
-		}
+	if (mixed || selectedPropertyCharacter.length != 2) {
+		return
+	}
+
+	// 合成対象のキャラクターを所持キャラクターから削除
+	console.dir(selectedPropertyCharacter)
+	propertyCharacter = propertyCharacter.filter((_, index) => {
+		console.log(index, selectedPropertyCharacter.includes(index))
+		return selectedPropertyCharacter.includes(index) == false
+	})
+	updateScroll()
+
+	selectedPropertyCharacter.length = 0
+	mixed = true;
+
+	nextLevelMixCountdown--;
+	if(nextLevelMixCountdown == 0){
+		level++;
+		nextLevelMixCountdown = level * level;
 	}
 }
 
@@ -625,9 +544,6 @@ function executeMix() {
  */
 function executeHant() {
 	console.log("狩り")
-	hant = true;
-	newGraphics();
-	c++;
 }
 
 
@@ -645,10 +561,7 @@ function executeBack() {
 function scrollUp() {
 	if (propertyListScroll != 0) {
 		propertyListScroll--;
-		buttons[4].visible = true
-		if (propertyListScroll == 0) {
-			buttons[3].visible = false
-		}
+		updateScroll()
 	}
 }
 
@@ -659,7 +572,28 @@ function scrollUp() {
 function scrollDown() {
 	if (propertyListScroll <= propertyCharacter.length - 4) {
 		propertyListScroll++;
+		updateScroll()
+	}
+}
+
+
+/**
+ * スクロール状態／スクロールボタンの更新
+ */
+function updateScroll() {
+	if (propertyListScroll > propertyCharacter.length - 4) {
+		propertyListScroll = propertyCharacter.length - 4
+	}
+	if (propertyCharacter.length <= 4) {
+		propertyListScroll = 0
+		buttons[3].visible = false
+		buttons[4].visible = false
+	} else {
 		buttons[3].visible = true
+		buttons[4].visible = true
+		if (propertyListScroll == 0) {
+			buttons[3].visible = false
+		}
 		if (propertyListScroll == propertyCharacter.length - 4) {
 			buttons[4].visible = false
 		}
