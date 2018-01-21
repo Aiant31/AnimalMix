@@ -323,7 +323,7 @@ function renderProperties() {
 		// 項目の枠
 		if (selectedPropertyCharacter.includes(propertyCharacterIndex)) {
 			// 選択中のキャラクター
-			ctx.fillStyle = "#1e90ff"
+			ctx.fillStyle = "red"
 		} else {
 			ctx.fillStyle = "#1e90ff"
 		}
@@ -372,6 +372,18 @@ function renderMixView() {
 	ctx.font = "70px serif"
 	ctx.fillStyle = "black"
 	ctx.fillText("？", 225, 220)
+
+	selectedPropertyCharacter.forEach((propertyIndex, index) => {
+		const charaId = propertyCharacter[propertyIndex]
+		const chara = characterMaster[charaId]
+		ctx.fillStyle = "#1e90ff"
+		ctx.font = "25px serif"
+		ctx.fillRect(50 + 240 * index, 75, 180, 45);
+		const displayName = chara.name + " Lv" + chara.level
+		ctx.strokeText(displayName, 55 + 245 * index, 80);
+		ctx.fillStyle = "#c0c0c0";
+		ctx.fillText(displayName, 55 + 245 * index, 80);
+	})
 }
 
 
@@ -469,6 +481,24 @@ function mouseevent(event) {
 			}
 		}
 	})
+
+	// 合成対象キャラクターの追加
+	if (event.type == "click") {
+		[0, 1, 2, 3].forEach((index) => {
+			const top = 70 + 70 * index
+			if (530 < x && x < 730 && top < y && y < top + 60) {
+				const propertyCharacterIndex = propertyListScroll + index
+				const existsIndex = selectedPropertyCharacter.indexOf(propertyCharacterIndex)
+				if (existsIndex == -1) {
+					if (selectedPropertyCharacter.length < 2) {
+						selectedPropertyCharacter.push(propertyCharacterIndex)
+					}
+				} else {
+					selectedPropertyCharacter.splice(existsIndex, 1)
+				}
+			}
+		})
+	}
 }
 
 
