@@ -40,6 +40,7 @@ const buttons = [
 			y: 380
 		},
 		state: null,
+		visible: true,
 		onclick: executeMix
 	},
 	{
@@ -50,6 +51,7 @@ const buttons = [
 			y: 400
 		},
 		staet: null,
+		visible: true,
 		onclick: executeHant
 	},
 	{
@@ -60,6 +62,7 @@ const buttons = [
 			y: 530
 		},
 		state: null,
+		visible: true,
 		onclick: executeBack
 	},
 	{
@@ -70,6 +73,7 @@ const buttons = [
 			y: 60
 		},
 		state: null,
+		visible: true,
 		onclick: scrollUp
 	},
 	{
@@ -80,6 +84,7 @@ const buttons = [
 			y: 270
 		},
 		state: null,
+		visible: true,
 		onclick: scrollDown
 	}
 ]
@@ -111,7 +116,7 @@ const characterMaster = [
 /**
  * 所有しているキャラクター
  */
-const propertyCharacter = [0, 1, 2, 3]
+const propertyCharacter = [0, 0, 1, 1, 2, 3]
 
 /**
  * 所有キャラクターリストのスクロール位置
@@ -139,6 +144,11 @@ function init() {
 	canvas.addEventListener("click", mouseevent)
 	canvas.addEventListener("mousedown", mouseevent)
 	canvas.addEventListener("mouseup", mouseup)
+
+	buttons[3].visible = false
+	if (propertyCharacter.length <= 4) {
+		buttons[4].visible = false
+	}
 
 	requestAnimationFrame(update)
 }
@@ -181,6 +191,9 @@ function renderButtons() {
 	let textX
 	let textY
 	buttons.forEach((button) => {
+		if (button.visible == false) {
+			return;
+		}
 		if (button.state == null) {
 			button.state = "normal"
 		}
@@ -475,7 +488,7 @@ function mouseevent(event) {
 			if (event.type == "mousedown") {
 				button.state = "press"
 			} else if (event.type == "click") {
-				if (button.onclick != null) {
+				if (button.onclick != null && button.visible) {
 					button.onclick()
 				}
 			}
@@ -649,8 +662,13 @@ function executeBack() {
  * 所持キャラクターリストの上スクロール
  */
 function scrollUp() {
-	console.log("上スクロール")
-	yy = yy - 70;
+	if (propertyListScroll != 0) {
+		propertyListScroll--;
+		buttons[4].visible = true
+		if (propertyListScroll == 0) {
+			buttons[3].visible = false
+		}
+	}
 }
 
 
@@ -658,6 +676,11 @@ function scrollUp() {
  * 所持キャラクターリストの下スクロール
  */
 function scrollDown() {
-	console.log("下スクロール")
-	yy = yy + 70;
+	if (propertyListScroll <= propertyCharacter.length - 4) {
+		propertyListScroll++;
+		buttons[3].visible = true
+		if (propertyListScroll == propertyCharacter.length - 4) {
+			buttons[4].visible = false
+		}
+	}
 }
