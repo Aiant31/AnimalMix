@@ -10,11 +10,6 @@ var lv = 1
 var nextlv = lv * lv
 var lvCount = 0
 
-var colorn1 = "#1e90ff"
-var colorn2 = "#1e90ff"
-var colorn3 = "#1e90ff"
-var colorn4 = "#1e90ff"
-
 var mix = false
 var clear1 = false
 var clear2 = false
@@ -543,48 +538,40 @@ function onClick(event) {
 
 	if (530 < x && x < 730 && yy < y && y < yy + 60) {
 		if(click1 == false && mix == false){
-			colorn1 = "#ff0000";
 			click1 = true;
 			n = 1;
 		}
 		else{
-			colorn1 = "#1e90ff";
 			click1 = false;
 			n = 0;
 		}
 	}
 	if (530 < x && x < 730 && yy + 70 < y && y < yy + 130) {
 		if(click2 == false && mix == false){
-			colorn2 = "#ff0000";
 			click2 = true;
 			m = 2;
 		}
 		else{
-			colorn2 = "#1e90ff";
 			click2 = false;
 			m = 0;
 		}
 	}
 	if (530 < x && x < 730 && yy + 140 < y && y < yy + 200) {
 		if(click1 == false && mix == false){
-			colorn3 = "#ff0000";
 			click1 = true;
 			n = 3;
 		}
 		else{
-			colorn3 = "#1e90ff";
 			click1 = false;
 			n = 0;
 		}
 	}
 	if (530 < x && x < 730 && yy + 210 < y && y < yy + 270) {
 		if(click2 == false && mix == false){
-			colorn4 = "#ff0000";
 			click2 = true;
 			m = 4;
 		}
 		else{
-			colorn4 = "#1e90ff";
 			click2 = false;
 			m = 0;
 		}
@@ -648,13 +635,7 @@ function executeHant() {
  * もどす
  */
 function executeBack() {
-	console.log("もどす")
-	click1 = false;
-	click2 = false;
-	colorn1 = "#1e90ff";
-	colorn2 = "#1e90ff";
-	colorn3 = "#1e90ff";
-	colorn4 = "#1e90ff";
+	selectedPropertyCharacter.length = 0
 }
 
 
