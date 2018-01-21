@@ -31,8 +31,6 @@ var click1 = false
 var click2 = false
 var gosei = false
 var hant = false
-var x
-var y
 
 
 /**
@@ -42,17 +40,52 @@ const buttons = [
 	{
 		shape: "octagon",
 		text: "合成！",
-		position: [50, 380]
+		position: {
+			x: 50,
+			y: 380
+		},
+		state: null,
+		onclick: executeMix
 	},
 	{
 		shape: "octagon",
 		text: "狩り",
-		position: [280, 400]
+		position: {
+			x: 280,
+			y: 400
+		},
+		staet: null,
+		onclick: executeHant
 	},
 	{
 		shape: "hexagon",
 		text: "もどす",
-		position: [60, 530]
+		position: {
+			x: 60,
+			y: 530
+		},
+		state: null,
+		onclick: executeBack
+	},
+	{
+		shape: "text",
+		text: "↑",
+		position: {
+			x: 730,
+			y: 60
+		},
+		state: null,
+		onclick: scrollUp
+	},
+	{
+		shape: "text",
+		text: "↓",
+		position: {
+			x: 730,
+			y: 270
+		},
+		state: null,
+		onclick: scrollDown
 	}
 ]
 
@@ -108,8 +141,8 @@ function init() {
 
 	ctx = canvas.getContext("2d")
 
-	canvas.addEventListener("click", onClick)
-	canvas.addEventListener("mousedown", mousedown)
+	canvas.addEventListener("click", mouseevent)
+	canvas.addEventListener("mousedown", mouseevent)
 	canvas.addEventListener("mouseup", mouseup)
 
 	requestAnimationFrame(update)
@@ -130,10 +163,8 @@ function update() {
  */
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
-	//drawGraphics2()
 	newGraphics()
 	drawText2()
-	//drawGraphics()
 	renderButtons()
 	renderProperties()
 	drawText()
@@ -148,37 +179,55 @@ function renderButtons() {
 	let textX
 	let textY
 	buttons.forEach((button) => {
+		if (button.state == null) {
+			button.state = "normal"
+		}
 		const position = button.position
 		switch (button.shape) {
 			case "octagon":
-				drawOctagonButtonFrame(position[0], position[1])
+				drawOctagonButtonFrame(position.x, position.y, button.state)
 				ctx.font = "70px serif"
 				ctx.lineWidth = 2
 				ctx.textBaseline = "top"
 				{
 					const metrics = ctx.measureText(button.text)
-					textX = position[0] - metrics.width / 2 + 100
-					textY = position[1] + 20
+					textX = position.x - metrics.width / 2 + 100
+					textY = position.y + 20
 				}
 				break;
 			case "hexagon":
-				drawHexagonButtonFrame(position[0], position[1])
+				drawHexagonButtonFrame(position.x, position.y, button.state)
 				ctx.font = "45px serif"
 				ctx.lineWidth = 2
 				ctx.textBaseline = "top"
 				{
 					const metrics = ctx.measureText(button.text)
-					textX = position[0] - metrics.width / 2 + 95
-					textY = position[1]
+					textX = position.x - metrics.width / 2 + 95
+					textY = position.y
 				}
 				break;
 		}
 		
-		ctx.strokeStyle = "black"
-		ctx.fillStyle = "#c0c0c0"
-
-		ctx.fillText(button.text, textX, textY)
-		ctx.strokeText(button.text, textX, textY)
+		switch (button.shape) {
+			case "octagon":
+			case "hexagon":
+				ctx.strokeStyle = "black"
+				ctx.fillStyle = "#c0c0c0"
+		
+				ctx.fillText(button.text, textX, textY)
+				ctx.strokeText(button.text, textX, textY)
+				break
+			case "text":
+				ctx.font = "70px serif"
+				if (button.state == "press") {
+					ctx.fillStyle = "red"
+				} else if (button.state = "normal") {
+					ctx.fillStyle = "black"
+				}
+				ctx.fillText(button.text, position.x, position.y)
+				break
+		}
+		
 	})
 }
 
@@ -188,10 +237,18 @@ function renderButtons() {
  * @param {Number} x 
  * @param {Number} y 
  */
-function drawOctagonButtonFrame(x, y) {
+function drawOctagonButtonFrame(x, y, state) {
 	ctx.lineWidth = 5
 	ctx.strokeStyle = "black"
-	ctx.fillStyle = "#ffa500"
+	switch (state) {
+		case "press":
+			ctx.fillStyle = "#ff0000"
+			break
+		case "normal":
+		default:
+			ctx.fillStyle = "#ffa500"
+			break
+	}
 	ctx.beginPath()
 	ctx.moveTo(x + 50, y)
 	ctx.lineTo(x, y + 30)
@@ -212,10 +269,18 @@ function drawOctagonButtonFrame(x, y) {
  * @param {Number} x 
  * @param {Number} y 
  */
-function drawHexagonButtonFrame(x, y) {
+function drawHexagonButtonFrame(x, y, state) {
 	ctx.lineWidth = 5
 	ctx.strokeStyle = "black"
-	ctx.fillStyle = "#ffa500"
+	switch (state) {
+		case "press":
+			ctx.fillStyle = "#ff0000"
+			break
+		case "normal":
+		default:
+			ctx.fillStyle = "#ffa500"
+			break
+	}
 	ctx.beginPath()
 	ctx.moveTo(x + 40, y)
 	ctx.lineTo(x, y + 30)
@@ -268,7 +333,6 @@ function drawStrokes(){
 	ctx.lineWidth = 5;
 	ctx.strokeStyle = "#000000";
 	ctx.strokeRect(40, 60, 440, 300);
-	//ctx.strokeRect(520, 60, 220, 290);
 	ctx.strokeRect(520, 400, 220, 200);
 	ctx.strokeRect(120, 200, 280, 120);
 	ctx.lineWidth = 2;
@@ -291,10 +355,6 @@ function drawText(){
 	ctx.fillText("マイパラメータ", 520, 360);
 
 	ctx.font = "70px serif";
-	ctx.fillStyle = colors1;
-	ctx.fillText("↑", 730, 60);
-	ctx.fillStyle = colors2;
-	ctx.fillText("↓", 730, 270);
 	ctx.fillStyle = "#000000";
 	ctx.fillText("+", 235, 50);
 	ctx.fillText("↓", 225, 120);
@@ -327,7 +387,6 @@ function drawText2(){
 }
 
 function newGraphics(){
-
 	if(gosei == true){
 		ctx.fillRect(530, yy + yy * c, 200, 60);
 	}
@@ -335,7 +394,10 @@ function newGraphics(){
 		ctx.fillRect(530, yy + yy * c, 200, 60);
 	}
 }
-function mousedown(event) {
+
+function mouseevent(event) {
+	let x
+	let y
 	if (event.changedTouches) {
 		var touch = event.changedTouches[0];
 		x = touch.clientX - canvas.offsetLeft;
@@ -348,89 +410,64 @@ function mousedown(event) {
 		? event.layerY
 		: event.offsetY;
 	}
-	if (75 < x && x < 225 && 380 < y && y < 510) {
-		color1 = "#ff0000";
-	}
-	if (305 < x && x < 455 && 400 < y && y < 530) {
-		color2 = "#ff0000";
-	}
-	if (80 < x && x < 225 && 530 < y && y < 590) {
-		color3 = "#ff0000";
-	}
-	if (755 < x && x < 775 && 73 < y && y < 133) {
-		colors1 = "#ff0000";
-	}
-	if (755 < x && x < 775 && 285 < y && y < 345) {
-		colors2 = "#ff0000";
-	}
+
+	buttons.forEach((button) => {
+		const position = button.position
+		let width;
+		let height;
+		switch (button.shape) {
+			case "octagon":
+				width = 150
+				height = 130
+				break
+			case "hexagon":
+				width = 145
+				height = 60
+				break
+			case "text":
+				width = 20
+				height = 60
+				break
+		}
+
+		const left = position.x + 25
+		const right = position.x + 25 + width
+		const top = position.y
+		const bottom = position.y + height
+		if (left < x && x < right && top < y && y < bottom) {
+			if (event.type == "mousedown") {
+				button.state = "press"
+			} else if (event.type == "click") {
+				if (button.onclick != null) {
+					button.onclick()
+				}
+			}
+		}
+	})
 }
 
 function mouseup(event) {
-
-	if (75 < x && x < 225 && 380 < y && y < 510) {
-		color1 = "#ffa500";
-	}
-	if (305 < x && x < 455 && 400 < y && y < 530) {
-		color2 = "#ffa500";
-	}
-	if (80 < x && x < 225 && 530 < y && y < 590) {
-		color3 = "#ffa500";
-	}
-	if (755 < x && x < 775 && 73 < y && y < 133) {
-		colors1 = "#000000";
-	}
-	if (755 < x && x < 775 && 285 < y && y < 345) {
-		colors2 = "#000000";
-	}
+	buttons.forEach((button) => {
+		button.state = "normal"
+	})
 }
 
 function onClick(event) {
-	
-	if (75 < x && x < 225 && 380 < y && y < 510) {
-		console.log("合成！");
-		if(click1 == true && click2 == true){
-			console.log("成功！");
-			click1 = false;
-			click2 = false;
-			mix = true;
-			if(n == 1 || m == 1){
-				clear1 = true;
-				if(n == 2 || m == 2){
-					clear2 = true;
-				}
-			}
-			if(n == 3 || m == 3){
-				clear3 = true;
-				if(n == 4 || m == 4){
-					clear4 = true;
-				}
-			}
-			lvCount++;
-			if(lvCount == lv * lv){
-				lv++;
-				nextlv = lv * lv;
-				lvCount = 0;
-			}
-			else{
-				nextlv--;
-		}
-		}
+	let x
+	let y
+	if (event.changedTouches) {
+		var touch = event.changedTouches[0];
+		x = touch.clientX - canvas.offsetLeft;
+		y = touch.clientY - canvas.offsetTop;
+	} else {
+		x = event.offsetX == undefined
+		? event.layerX
+		: event.offsetX;
+		y = event.offsetY == undefined
+		? event.layerY
+		: event.offsetY;
 	}
-	if (305 < x && x < 455 && 400 < y && y < 530) {
-		console.log("狩り！");
-		hant = true;
-		newGraphics();
-		c++;
-	}
-	if (80 < x && x < 225 && 530 < y && y < 590) {
-		console.log("もどす");
-		click1 = false;
-		click2 = false;
-		colorn1 = "#1e90ff";
-		colorn2 = "#1e90ff";
-		colorn3 = "#1e90ff";
-		colorn4 = "#1e90ff";
-	}
+
 	if (530 < x && x < 730 && yy < y && y < yy + 60) {
 		if(click1 == false && mix == false){
 			colorn1 = "#ff0000";
@@ -479,12 +516,6 @@ function onClick(event) {
 			m = 0;
 		}
 	}
-	if (755 < x && x < 775 && 73 < y && y < 133) {
-		yy = yy - 70;
-	}
-	if (755 < x && x < 775 && 285 < y && y < 345) {
-		yy = yy + 70;
-	}
 	if(120 < x && x < 400 && 200 < y && y < 320){
 		mix = false;
 		gosei = true;
@@ -493,3 +524,80 @@ function onClick(event) {
 	}
 }
 
+
+/**
+ * 合成実行
+ */
+function executeMix() {
+	console.log("合成")
+	if(click1 == true && click2 == true){
+		console.log("成功！");
+		click1 = false;
+		click2 = false;
+		mix = true;
+		if(n == 1 || m == 1){
+			clear1 = true;
+			if(n == 2 || m == 2){
+				clear2 = true;
+			}
+		}
+		if(n == 3 || m == 3){
+			clear3 = true;
+			if(n == 4 || m == 4){
+				clear4 = true;
+			}
+		}
+		lvCount++;
+		if(lvCount == lv * lv){
+			lv++;
+			nextlv = lv * lv;
+			lvCount = 0;
+		}
+		else{
+			nextlv--;
+		}
+	}
+}
+
+
+/**
+ * 狩り実行
+ */
+function executeHant() {
+	console.log("狩り")
+	hant = true;
+	newGraphics();
+	c++;
+}
+
+
+/**
+ * もどす
+ */
+function executeBack() {
+	console.log("もどす")
+	click1 = false;
+	click2 = false;
+	colorn1 = "#1e90ff";
+	colorn2 = "#1e90ff";
+	colorn3 = "#1e90ff";
+	colorn4 = "#1e90ff";
+}
+
+
+/**
+ * 所持キャラクターリストの上スクロール
+ */
+function scrollUp() {
+	console.log("上スクロール")
+	yy = yy - 70;
+}
+
+
+/**
+ * 所持キャラクターリストの下スクロール
+ */
+function scrollDown() {
+	console.log("下スクロール")
+	yy = yy + 70;
+}
