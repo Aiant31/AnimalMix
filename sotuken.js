@@ -4,7 +4,7 @@ var canvas
 var level = 1
 var nextLevelMixCountdown = level * level
 
-var mixed = false
+var mixedCharacter = null
 
 /**
  * ボタンデータ
@@ -78,31 +78,31 @@ const characterMaster = [
 	},
 	{
 		name: "ネコ",
-		level: 3
+		level: 4
 	},
 	{
 		name: "イヌ",
-		level: 5
-	},
-	{
-		name: "ライオン",
 		level: 10
 	},
 	{
+		name: "ライオン",
+		level: 30
+	},
+	{
 		name: "キリン",
-		level: 6
+		level: 15
 	},
 	{
 		name: "カバ",
-		level: 7
+		level: 20
 	},
 	{
 		name: "カピバラ",
-		level: 3
+		level: 5
 	},
 	{
 		name: "アルパカ",
-		level: 3
+		level: 6
 	},
 	{
 		name: "アヒル",
@@ -114,11 +114,59 @@ const characterMaster = [
 	},
 	{
 		name: "カメ",
-		level: 5
+		level: 13
 	},
 	{
 		name: "トカゲ",
+		level: 8
+	},
+	{
+		name: "ハムスター",
+		level: 1
+	},
+	{
+		name: "ウサギ",
+		level: 3
+	},
+	{
+		name: "ウマ",
+		level: 12
+	},
+	{
+		name: "ヒツジ",
+		level: 10
+	},
+	{
+		name: "ヤギ",
+		level: 9
+	},
+	{
+		name: "クマ",
+		level: 28
+	},
+	{
+		name: "パンダ",
+		level: 22
+	},
+	{
+		name: "ゾウ",
+		level: 30
+	},
+	{
+		name: "ハイエナ",
+		level: 26
+	},
+	{
+		name: "シカ",
+		level: 16
+	},
+	{
+		name: "ニワトリ",
 		level: 4
+	},
+	{
+		name: "トラ",
+		level: 29
 	}
 ]
 
@@ -357,7 +405,9 @@ function renderProperties() {
 		if (propertyCharacter.length <= propertyCharacterIndex) {
 			return
 		}
-		const charaId = propertyCharacter[propertyCharacterIndex].charaId
+		const property = propertyCharacter[propertyCharacterIndex]
+		const charaId = property.charaId
+		const level = property.level
 		const chara = characterMaster[charaId]
 
 		// 項目の枠
@@ -372,7 +422,7 @@ function renderProperties() {
 		// キャラクター名
 		ctx.fillStyle = "#c0c0c0"
 		ctx.strokeStyle = "black"
-		const displayName = chara.name + " Lv" + chara.level
+		const displayName = chara.name + " Lv" + level
 		ctx.strokeText(displayName, 540, 80 + 70 * index)
 		ctx.fillText(displayName, 540, 80 + 70 * index)
 	})
@@ -415,22 +465,30 @@ function renderMixView() {
 
 	// 合成対象のキャラクター
 	selectedPropertyCharacter.forEach((propertyIndex, index) => {
-		const charaId = propertyCharacter[propertyIndex].charaId
+		const property = propertyCharacter[propertyIndex]
+		const charaId = property.charaId
+		const level = property.level
 		const chara = characterMaster[charaId]
 		ctx.fillStyle = "#1e90ff"
 		ctx.font = "25px serif"
 		ctx.fillRect(50 + 240 * index, 75, 180, 45);
-		const displayName = chara.name + " Lv" + chara.level
+		const displayName = chara.name + " Lv" + level
 		ctx.strokeText(displayName, 55 + 245 * index, 80);
 		ctx.fillStyle = "#c0c0c0";
 		ctx.fillText(displayName, 55 + 245 * index, 80);
 	})
 
 	// 合成済みキャラクター
-	if (mixed) {
+	if (mixedCharacter) {
+		const chara = characterMaster[mixedCharacter.charaId]
+		const level = mixedCharacter.level
 		ctx.fillStyle = "#1e90ff"
 		ctx.font = "25px serif"
 		ctx.fillRect(120, 200, 280, 120);
+		const displayName = chara.name + " Lv" + level
+		ctx.strokeText(displayName, 125, 205);
+		ctx.fillStyle = "#c0c0c0";
+		ctx.fillText(displayName, 125, 205);
 	}
 }
 
@@ -521,7 +579,7 @@ function mouseevent(event) {
 	})
 
 	// 合成対象キャラクターの追加
-	if (mixed == false && event.type == "click") {
+	if (mixedCharacter == null && event.type == "click") {
 		[0, 1, 2, 3].forEach((index) => {
 			const top = 70 + 70 * index
 			if (530 < x && x < 730 && top < y && y < top + 60) {
@@ -542,8 +600,11 @@ function mouseevent(event) {
 	}
 
 	// 合成済みキャラクターの獲得
-	if(120 < x && x < 400 && 200 < y && y < 320){
-		mixed = false;
+	if(120 < x && x < 400 && 200 < y && y < 320 && event.type == "click"){
+		if (mixedCharacter) {
+			propertyCharacter.push(mixedCharacter)
+			mixedCharacter = null
+		}
 	}
 }
 
@@ -563,9 +624,14 @@ function mouseup(event) {
  * 合成実行
  */
 function executeMix() {
-	if (mixed || selectedPropertyCharacter.length != 2) {
+	if (mixedCharacter || selectedPropertyCharacter.length != 2) {
 		return
 	}
+
+	// キャラクターを合成する
+	const property1 = propertyCharacter[selectedPropertyCharacter[0]]
+	const property2 = propertyCharacter[selectedPropertyCharacter[1]]
+	mixedCharacter = calcMix(property1, property2)
 
 	// 合成対象のキャラクターを所持キャラクターから削除
 	propertyCharacter = propertyCharacter.filter((_, index) => {
@@ -574,7 +640,6 @@ function executeMix() {
 	updateScroll()
 
 	selectedPropertyCharacter.length = 0
-	mixed = true;
 
 	nextLevelMixCountdown--;
 	if(nextLevelMixCountdown == 0){
@@ -643,4 +708,39 @@ function updateScroll() {
 			buttons[4].visible = false
 		}
 	}
+}
+
+
+/**
+ * キャラクター合成結果の計算
+ * @param {Object} property1 所有キャラ１ 
+ * @param {Object} property2 所有キャラ２ 
+ * @return {Object} 合成結果のキャラクター情報
+ */
+function calcMix(property1, property2) {
+	// 強いキャラと弱いキャラを判定
+	let strongChara
+	let weakChara
+	if (property1.level > property2.level) {
+		strongChara = property1
+		weakChara = property2
+	} else if (property1.level < property2.level) {
+		strongChara = property2
+		weakChara = property1
+	} else {
+		// レベルが同じ場合は、どちらかランダム
+		if (Math.floor(Math.random() * 2) == 0) {
+			strongChara = property1
+			weakChara = property2
+		} else {
+			strongChara = property2
+			weakChara = property1
+		}
+	}
+
+	// 強いキャラが弱いキャラを食う
+	strongChara.level += weakChara.level
+
+	// 強いキャラをそのまま合成結果とする
+	return strongChara
 }
