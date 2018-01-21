@@ -86,31 +86,31 @@ const characterMaster = [
 	},
 	{
 		name: "ライオン",
-		level: 30
+		level: 50
 	},
 	{
 		name: "キリン",
-		level: 15
-	},
-	{
-		name: "カバ",
 		level: 20
 	},
 	{
+		name: "カバ",
+		level: 30
+	},
+	{
 		name: "カピバラ",
-		level: 5
+		level: 10
 	},
 	{
 		name: "アルパカ",
-		level: 6
+		level: 12
 	},
 	{
 		name: "アヒル",
-		level: 2
+		level: 3
 	},
 	{
 		name: "カンガルー",
-		level: 5
+		level: 12
 	},
 	{
 		name: "カメ",
@@ -118,7 +118,7 @@ const characterMaster = [
 	},
 	{
 		name: "トカゲ",
-		level: 8
+		level: 12
 	},
 	{
 		name: "ハムスター",
@@ -126,51 +126,51 @@ const characterMaster = [
 	},
 	{
 		name: "ウサギ",
-		level: 3
+		level: 5
 	},
 	{
 		name: "ウマ",
-		level: 12
-	},
-	{
-		name: "ヒツジ",
-		level: 10
-	},
-	{
-		name: "ヤギ",
-		level: 9
-	},
-	{
-		name: "クマ",
-		level: 28
-	},
-	{
-		name: "パンダ",
-		level: 22
-	},
-	{
-		name: "ゾウ",
-		level: 30
-	},
-	{
-		name: "ハイエナ",
-		level: 26
-	},
-	{
-		name: "シカ",
 		level: 16
 	},
 	{
+		name: "ヒツジ",
+		level: 16
+	},
+	{
+		name: "ヤギ",
+		level: 15
+	},
+	{
+		name: "クマ",
+		level: 45
+	},
+	{
+		name: "パンダ",
+		level: 30
+	},
+	{
+		name: "ゾウ",
+		level: 48
+	},
+	{
+		name: "ハイエナ",
+		level: 40
+	},
+	{
+		name: "シカ",
+		level: 32
+	},
+	{
 		name: "ニワトリ",
-		level: 4
+		level: 6
 	},
 	{
 		name: "トラ",
-		level: 29
+		level: 42
 	},
 	{
 		name: "カエル",
-		level: 2
+		level: 4
 	}
 ]
 
@@ -178,7 +178,7 @@ const characterMaster = [
 /**
  * 初期キャラクター
  */
-const startCharacter = [0, 1]
+const startCharacter = [0, 0, 1, 1, 2]
 
 
 /**
@@ -226,6 +226,7 @@ function init() {
 			level: chara.level
 		})
 	})
+	updateScroll()
 
 	requestAnimationFrame(update)
 }
@@ -744,7 +745,15 @@ function calcMix(property1, property2) {
 	}
 
 	// 強いキャラが弱いキャラを食う
-	strongChara.level += weakChara.level
+	const levelUp = (_ => {
+		if (weakChara.level == 1) {
+			return Math.floor(Math.random() * 2)
+		} else {
+			const half = weakChara.level / 2
+			return Math.floor((Math.random() * half + half) / 2)  
+		}
+	})()
+	strongChara.level += levelUp
 
 	// 強いキャラをそのまま合成結果とする
 	return strongChara
