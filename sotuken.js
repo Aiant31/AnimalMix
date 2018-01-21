@@ -1,4 +1,4 @@
-﻿var ctx
+var ctx
 var canvas
 
 var level = 1
@@ -695,7 +695,21 @@ function executeHant() {
 
 	// 合成候補のキャラクターはもどす
 	selectedPropertyCharacter.length = 0
-	propertyCharacter.forEach(property => hanting(property))
+	propertyCharacter.map(property => {
+		return hanting(property)
+	}).forEach((result, index) => {
+		if (result == null) {
+			// 狩りに行ったキャラクターが死亡
+			propertyCharacter.splice(index, 1)
+		} else {
+			// キャラクターを捕獲
+			propertyCharacter.push({
+				charaId: result,
+				level: characterMaster[result].level
+			})
+		}
+	})
+	updateScroll()
 	
 	if (propertyCharacter.length == 0) {
 		// 絶滅
@@ -804,7 +818,7 @@ function calcMix(property1, property2) {
 /**
  * 狩りの実行
  * @param {Object} property 狩りに行かせるキャラクター
- * @return {Object|String|null} 捕まえた獲物（狩りに行ったキャラが死んだら"death"）
+ * @return {Object|null} 捕まえた獲物（狩りに行ったキャラが死んだらnull）
  */
 function hanting(property) {
 	// 野生のキャラクターに遭遇
@@ -815,16 +829,12 @@ function hanting(property) {
 	const totalLevel = encountChara.level + property.level * 2
 	const result = Math.floor(Math.random() * totalLevel)
 	if (0 <= result && result < property.level * 2) {
-		// 勝利　野生のキャラクターを捕獲する
-		propertyCharacter.push({
-			charaId: encountCharaId,
-			level: encountChara.level
-		})
+		// 勝利
+		return encountCharaId
 	} else {
-		// 敗北　狩りに行ったキャラクターが死ぬ
-		propertyCharacter.splice(propertyCharacter.indexOf(property), 1)
+		// 敗北
+		return null
 	}
-	updateScroll()
 }
 
 
