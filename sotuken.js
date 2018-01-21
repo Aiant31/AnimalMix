@@ -10,15 +10,10 @@ var lv = 1
 var nextlv = lv * lv
 var lvCount = 0
 
-var color1 = "#ffa500"
-var color2 = "#ffa500"
-var color3 = "#ffa500"
 var colorn1 = "#1e90ff"
 var colorn2 = "#1e90ff"
 var colorn3 = "#1e90ff"
 var colorn4 = "#1e90ff"
-var colors1 = "#000000"
-var colors2 = "#000000"
 
 var mix = false
 var clear1 = false
@@ -164,11 +159,18 @@ function update() {
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	newGraphics()
-	drawText2()
+
+	// 合成画面の描画
+	renderMixView()
+
+	// ボタンの描画
 	renderButtons()
+
+	// 所持キャラクターリストの描画
 	renderProperties()
-	drawText()
-	drawStrokes()
+
+	// ステータス画面の描画
+	renderStatusView()
 }
 
 
@@ -298,6 +300,14 @@ function drawHexagonButtonFrame(x, y, state) {
  * 所有キャラクターリストの描画
  */
 function renderProperties() {
+	ctx.lineWidth = 2
+	ctx.textBaseline = "top"
+	ctx.font = "30px serif"
+	ctx.strokeStyle = "black"
+	ctx.fillStyle = "#c0c0c0"
+	ctx.strokeText("所持リスト", 520, 15)
+	ctx.fillText("所持リスト", 520, 15)
+
 	// 枠
 	ctx.lineWidth = 5
 	ctx.strokeStyle = "black"
@@ -328,63 +338,73 @@ function renderProperties() {
 	})
 }
 
-function drawStrokes(){
 
-	ctx.lineWidth = 5;
-	ctx.strokeStyle = "#000000";
-	ctx.strokeRect(40, 60, 440, 300);
-	ctx.strokeRect(520, 400, 220, 200);
+/**
+ * 合成画面の描画
+ */
+function renderMixView() {
+	ctx.lineWidth = 5
+	ctx.strokeStyle = "black"
+	ctx.strokeRect(40, 60, 440, 300)
 	ctx.strokeRect(120, 200, 280, 120);
+
 	ctx.lineWidth = 2;
 	ctx.strokeRect(50, 75, 180, 45);
 	ctx.strokeRect(290, 75, 180, 45);
 
-}
+	ctx.textBaseline = "top"
+	ctx.font = "30px serif"
+	ctx.fillStyle = "#c0c0c0"
+	ctx.strokeText("合成画面", 40, 15)
+	ctx.fillText("合成画面", 40, 15)
 
-function drawText(){
-	ctx.lineWidth = 2;
-	ctx.textBaseline = "top";
-	ctx.font = "30px serif";
-	ctx.strokeStyle = "#000000";
-	ctx.strokeText("合成画面", 40, 15);
-	ctx.fillStyle = "#c0c0c0";
-	ctx.fillText("合成画面", 40, 15);;
-	ctx.strokeText("所持リスト", 520, 15);
-	ctx.fillText("所持リスト", 520, 15);
-	ctx.strokeText("マイパラメータ", 520, 360);
-	ctx.fillText("マイパラメータ", 520, 360);
+	ctx.font = "70px serif"
+	ctx.fillStyle = "black"
+	ctx.fillText("+", 235, 50)
+	ctx.fillText("↓", 225, 120)
 
-	ctx.font = "70px serif";
-	ctx.fillStyle = "#000000";
-	ctx.fillText("+", 235, 50);
-	ctx.fillText("↓", 225, 120);
-	
-	ctx.font = "25px serif";
-	ctx.strokeText("合成Lv" + lv, 530, 410);
-	ctx.fillText("合成Lv" + lv, 530, 410);
-	ctx.strokeText("次のレベルまで", 530, 450);
-	ctx.fillText("次のレベルまで", 530, 450);
-	ctx.strokeText("あと" + nextlv + "回", 530, 470);
-	ctx.fillText("あと" + nextlv + "回", 530, 470);
-	ctx.strokeText("動物図鑑", 530, 510);
-	ctx.fillText("動物図鑑", 530, 510);
-	ctx.strokeText("△種類", 530, 530);
-	ctx.fillText("△種類", 530, 530);
-}
-
-function drawText2(){
-
-	ctx.font = "25px serif";
-	ctx.fillStyle = "#c0c0c0";
-	ctx.strokeText("1体目", 110, 80);
-	ctx.fillText("1体目", 110, 80);
-	ctx.strokeText("2体目", 350, 80);
-	ctx.fillText("2体目", 350, 80);
-	ctx.font = "70px serif";
-	ctx.fillStyle = "#000000";
+	ctx.font = "25px serif"
+	ctx.fillStyle = "#c0c0c0"
+	ctx.strokeText("1体目", 110, 80)
+	ctx.fillText("1体目", 110, 80)
+	ctx.strokeText("2体目", 350, 80)
+	ctx.fillText("2体目", 350, 80)
+	ctx.font = "70px serif"
+	ctx.fillStyle = "black"
 	ctx.fillText("？", 225, 220)
-
 }
+
+
+/**
+ * ステータス画面の描画
+ */
+function renderStatusView() {
+	ctx.lineWidth = 5
+	ctx.strokeStyle = "black"
+	ctx.strokeRect(520, 400, 220, 200)
+
+	ctx.lineWidth = 2
+	ctx.textBaseline = "top"
+	ctx.font = "30px serif"
+	ctx.strokeStyle = "black"
+	ctx.fillStyle = "#c0c0c0"
+	ctx.strokeText("マイパラメータ", 520, 360)
+	ctx.fillText("マイパラメータ", 520, 360)
+
+	ctx.fillStyle = "black"
+	ctx.font = "25px serif"
+	ctx.strokeText("合成Lv" + lv, 530, 410)
+	ctx.fillText("合成Lv" + lv, 530, 410)
+	ctx.strokeText("次のレベルまで", 530, 450)
+	ctx.fillText("次のレベルまで", 530, 450)
+	ctx.strokeText("あと" + nextlv + "回", 530, 470)
+	ctx.fillText("あと" + nextlv + "回", 530, 470)
+	ctx.strokeText("動物図鑑", 530, 510)
+	ctx.fillText("動物図鑑", 530, 510)
+	ctx.strokeText("△種類", 530, 530)
+	ctx.fillText("△種類", 530, 530)
+}
+
 
 function newGraphics(){
 	if(gosei == true){
@@ -395,6 +415,11 @@ function newGraphics(){
 	}
 }
 
+
+/**
+ * マウス入力時の処理
+ * @param {Event} event 
+ */
 function mouseevent(event) {
 	let x
 	let y
@@ -446,6 +471,11 @@ function mouseevent(event) {
 	})
 }
 
+
+/**
+ * マウスクリックを上げたときの処理
+ * @param {Event} event 
+ */
 function mouseup(event) {
 	buttons.forEach((button) => {
 		button.state = "normal"
