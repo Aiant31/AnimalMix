@@ -73,28 +73,66 @@ const buttons = [
  */
 const characterMaster = [
 	{
-		name: "動物１",
+		name: "ネズミ",
 		level: 1
 	},
 	{
-		name: "動物２",
-		level: 2
-	},
-	{
-		name: "動物３",
+		name: "ネコ",
 		level: 3
 	},
 	{
-		name: "動物４",
+		name: "イヌ",
+		level: 5
+	},
+	{
+		name: "ライオン",
+		level: 10
+	},
+	{
+		name: "キリン",
+		level: 6
+	},
+	{
+		name: "カバ",
+		level: 7
+	},
+	{
+		name: "カピバラ",
+		level: 3
+	},
+	{
+		name: "アルパカ",
+		level: 3
+	},
+	{
+		name: "アヒル",
+		level: 2
+	},
+	{
+		name: "カンガルー",
+		level: 5
+	},
+	{
+		name: "カメ",
+		level: 5
+	},
+	{
+		name: "トカゲ",
 		level: 4
 	}
 ]
 
 
 /**
+ * 初期キャラクター
+ */
+const startCharacter = [0, 1]
+
+
+/**
  * 所有しているキャラクター
  */
-let propertyCharacter = [0, 0, 1, 2, 3, 0]
+let propertyCharacter = []
 
 /**
  * 所有キャラクターリストのスクロール位置
@@ -127,6 +165,15 @@ function init() {
 	if (propertyCharacter.length <= 4) {
 		buttons[4].visible = false
 	}
+
+	// 初期キャラクター
+	startCharacter.forEach((charaId) => {
+		const chara = characterMaster[charaId]
+		propertyCharacter.push({
+			charaId: charaId,
+			level: chara.level
+		})
+	})
 
 	requestAnimationFrame(update)
 }
@@ -310,7 +357,7 @@ function renderProperties() {
 		if (propertyCharacter.length <= propertyCharacterIndex) {
 			return
 		}
-		const charaId = propertyCharacter[propertyCharacterIndex]
+		const charaId = propertyCharacter[propertyCharacterIndex].charaId
 		const chara = characterMaster[charaId]
 
 		// 項目の枠
@@ -368,7 +415,7 @@ function renderMixView() {
 
 	// 合成対象のキャラクター
 	selectedPropertyCharacter.forEach((propertyIndex, index) => {
-		const charaId = propertyCharacter[propertyIndex]
+		const charaId = propertyCharacter[propertyIndex].charaId
 		const chara = characterMaster[charaId]
 		ctx.fillStyle = "#1e90ff"
 		ctx.font = "25px serif"
@@ -521,9 +568,7 @@ function executeMix() {
 	}
 
 	// 合成対象のキャラクターを所持キャラクターから削除
-	console.dir(selectedPropertyCharacter)
 	propertyCharacter = propertyCharacter.filter((_, index) => {
-		console.log(index, selectedPropertyCharacter.includes(index))
 		return selectedPropertyCharacter.includes(index) == false
 	})
 	updateScroll()
