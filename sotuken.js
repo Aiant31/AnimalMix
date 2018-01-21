@@ -167,6 +167,10 @@ const characterMaster = [
 	{
 		name: "トラ",
 		level: 29
+	},
+	{
+		name: "カエル",
+		level: 2
 	}
 ]
 
@@ -185,12 +189,12 @@ let propertyCharacter = []
 /**
  * 所有キャラクターリストのスクロール位置
  */
-var propertyListScroll = 0
+let propertyListScroll = 0
 
 /**
  * 選択中の所有キャラクター項番（２つ）
  */
-var selectedPropertyCharacter = []
+let selectedPropertyCharacter = []
 
 
 window.addEventListener("DOMContentLoaded", init)
@@ -653,7 +657,8 @@ function executeMix() {
  * 狩り実行
  */
 function executeHant() {
-	console.log("狩り")
+	selectedPropertyCharacter.length = 0
+	propertyCharacter.forEach(property => hanting(property))
 }
 
 
@@ -743,4 +748,81 @@ function calcMix(property1, property2) {
 
 	// 強いキャラをそのまま合成結果とする
 	return strongChara
+}
+
+
+/**
+ * 狩りの実行
+ * @param {Object} property 狩りに行かせるキャラクター
+ * @return {Object|String|null} 捕まえた獲物（狩りに行ったキャラが死んだら"death"）
+ */
+function hanting(property) {
+	// 野生のキャラクターに遭遇
+	const encountCharaId = encountCharacter()
+	const encountChara = characterMaster[encountCharaId]	
+
+	// 遭遇したキャラクターと勝負
+	const totalLevel = encountChara.level + property.level * 2
+	const result = Math.floor(Math.random() * totalLevel)
+	if (0 <= result && result < property.level * 2) {
+		// 勝利　野生のキャラクターを捕獲する
+		propertyCharacter.push({
+			charaId: encountCharaId,
+			level: encountChara.level
+		})
+	} else {
+		// 敗北　狩りに行ったキャラクターが死ぬ
+		propertyCharacter.splice(propertyCharacter.indexOf(property), 1)
+	}
+	updateScroll()
+}
+
+
+/**
+ * 野生のキャラクターに遭遇
+ * @return {Number} 遭遇したキャラクターのID
+ * 
+ * レベルの高いキャラクターほど遭遇しにくい
+ */
+function encountCharacter() {
+	// キャラクター基礎データの最大レベル
+	const maxLevel = characterMaster
+	.map(chara => chara.level)
+	.reduce((prevLevel, level) => {
+		return Math.max(prevLevel, level)
+	})
+
+	// キャラクターごとの遭遇率
+	const encountCharacters = characterMaster.map((chara, index)  => {
+		return {
+			charaId: index,
+			rate: maxLevel + 1 - chara.level
+		}
+	})
+	.reduce((list, chara) => {
+		if (chara.charaId == 0) {
+			chara.prevRatePosition = 0
+		} else {
+			const prevChara = list[chara.charaId - 1]
+			chara.prevRatePosition = prevChara.prevRatePosition + prevChara.rate
+		}
+		return list.concat(chara)
+	}, [])
+
+	const totalRates = encountCharacters
+	.map(chara => chara.rate)
+	.reduce((prevRate, rate) => {
+		return prevRate + rate
+	})
+
+	// キャラクターに遭遇
+	const encountNumber = Math.floor(Math.random() * totalRates)
+	const encountCharaId = encountCharacters.find(chara => {
+		if (chara.prevRatePosition <= encountNumber && encountNumber < chara.prevRatePosition + chara.rate) {
+			return true
+		}
+		return false
+	}).charaId
+
+	return encountCharaId
 }
