@@ -6,6 +6,8 @@ var nextLevelMixCountdown = level * level
 
 var mixedCharacter = null
 
+var mode = "game"
+
 /**
  * ボタンデータ
  */
@@ -213,20 +215,7 @@ function init() {
 	canvas.addEventListener("mousedown", mouseevent)
 	canvas.addEventListener("mouseup", mouseup)
 
-	buttons[3].visible = false
-	if (propertyCharacter.length <= 4) {
-		buttons[4].visible = false
-	}
-
-	// 初期キャラクター
-	startCharacter.forEach((charaId) => {
-		const chara = characterMaster[charaId]
-		propertyCharacter.push({
-			charaId: charaId,
-			level: chara.level
-		})
-	})
-	updateScroll()
+	reset()
 
 	requestAnimationFrame(update)
 }
@@ -247,17 +236,50 @@ function update() {
 function render() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-	// 合成画面の描画
-	renderMixView()
+	switch (mode) {
+		case "game":
+			// 合成画面の描画
+			renderMixView()
 
-	// ボタンの描画
-	renderButtons()
+			// ボタンの描画
+			renderButtons()
 
-	// 所持キャラクターリストの描画
-	renderProperties()
+			// 所持キャラクターリストの描画
+			renderProperties()
 
-	// ステータス画面の描画
-	renderStatusView()
+			// ステータス画面の描画
+			renderStatusView()
+
+			break;
+		case "gameover":
+			ctx.fillStyle = "black"
+			ctx.font = "40px serif"
+			ctx.fillText("全ての動物を失った・・・", 200, 200)
+			break;
+	}
+}
+
+
+/**
+ * ゲームリセット
+ */
+function reset() {
+	selectedPropertyCharacter.length = 0
+	propertyCharacter = []
+	level = 1
+	nextLevelMixCountdown = level * level
+	mixedCharacter = null
+
+	// 初期キャラクター
+	startCharacter.forEach((charaId) => {
+		const chara = characterMaster[charaId]
+		propertyCharacter.push({
+			charaId: charaId,
+			level: chara.level
+		})
+	})
+	updateScroll()
+	mode = "game"
 }
 
 
@@ -395,8 +417,9 @@ function renderProperties() {
 	ctx.font = "30px serif"
 	ctx.strokeStyle = "black"
 	ctx.fillStyle = "#c0c0c0"
-	ctx.strokeText("所持リスト", 520, 15)
-	ctx.fillText("所持リスト", 520, 15)
+	const amount = propertyCharacter.length
+	ctx.strokeText("所持リスト(" + amount + ")", 520, 15)
+	ctx.fillText("所持リスト(" + amount + ")", 520, 15)
 
 	// 枠
 	ctx.lineWidth = 5
@@ -549,6 +572,12 @@ function mouseevent(event) {
 		: event.offsetY;
 	}
 
+	// ゲームオーバーのときにクリックでゲームリセット
+	if (mode == "gameover" && event.type == "click") {
+		reset()
+		return
+	}
+
 	buttons.forEach((button) => {
 		const position = button.position
 		let width;
@@ -658,8 +687,20 @@ function executeMix() {
  * 狩り実行
  */
 function executeHant() {
+	// 合成結果のキャラクターがいる場合は、所持する
+	if (mixedCharacter != null) {
+		propertyCharacter.push(mixedCharacter)
+		mixedCharacter = null
+	}
+
+	// 合成候補のキャラクターはもどす
 	selectedPropertyCharacter.length = 0
 	propertyCharacter.forEach(property => hanting(property))
+	
+	if (propertyCharacter.length == 0) {
+		// 絶滅
+		mode = "gameover"
+	}
 }
 
 
